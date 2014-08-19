@@ -1,33 +1,25 @@
 var bl = require('bl');
 var fs = require('fs');
-var https = require('https');
-var http = require('http');
-var url = "http://api.tumblr.com/v2/tagged?tag=music&api_key=fuiKNFp9vQFvjLNvx4sUwti4Yb5yGutBN4Xh10LXZhhRKjWlV4";
-var urlYoutube = 'https://gdata.youtube.com/feeds/api/standardfeeds/most_popular?v=2&alt=jsonc&max%C2%ADresults=50&time=today';
+
 var express  = require('express');
 var app      = express(); 
 
-var file = __dirname + '/tumblrTranslater.json';
-var fileYoutube = __dirname + '/youtubeTranslater2.json';
-
-
 app.use(express.static(__dirname)); 
 
-wordLinkTranslate(url,file,'/api/tumblr',http,function(jsonFromServer){return jsonFromServer.response});
-wordLinkTranslate(urlYoutube,fileYoutube,'/api/youtube',https,function(jsonFromServer){return jsonFromServer.data.items})
-function wordLinkTranslate(url,file,path,httpOrhttps,funA){
+exports.getValueFromAPI = getJsonValueFromAPI;
+exports.wordLinkTranslate= function (url,file,path,httpOrhttps,funA,functions){
 	readTranslatorAndGetPath(url,file,path,httpOrhttps,function(jsonFromServer,jsonTranslater,res){
 	var wordlinkArray = new Array();
 	var apiItemsArray = funA(jsonFromServer);
 	var arrayLength = apiItemsArray.length;
     var oneLoop = function(i,next){
     	var wordlinkOneItemObj = {};
-		var youtube = apiItemsArray[i];
+		var oneItem = apiItemsArray[i];
 		for(var key_trans in jsonTranslater){
 			if(jsonTranslater.hasOwnProperty(key_trans)){
 				var value_trans = jsonTranslater[key_trans];
 				var wordlinkTraceArray = [];
-				digInto(youtube,key_trans,value_trans,wordlinkTraceArray,wordlinkOneItemObj);
+				digInto(oneItem,key_trans,value_trans,wordlinkTraceArray,wordlinkOneItemObj,functions);
 			}
 		}
 
@@ -95,23 +87,8 @@ console.log("App listening on port 8000");
 function callbackFunction(value,jsonObj,callback){
 	return callback(value,jsonObj);
 }
-var getFunction = {
-	"getUrl" : function(value,jsonObj){
-					return "youtube.com/watch?v="+value;
-				}
-				,
-	"addRank" : function(value, jsonObj){
-				var likeCount = getJsonValueFromAPI(jsonObj,{"0" : "likeCount"});
-				var results = Math.floor(value+likeCount/10);
-				return results;
-				}
-				,
-	"addRoutingDate" : function(value,jsonObj){
-						return value.substring(0,7);
-				}
-}
 
-function getValue(jsonObj,jsonObj1,valueObj,num){
+function getValue(jsonObj,jsonObj1,valueObj,getFunction,num){
 	//console.log(num+" "+valueObj[num.toString()]);
 	var value = jsonObj1[valueObj[num.toString()]];
 	//console.log(typeof value);
@@ -127,14 +104,14 @@ function getValue(jsonObj,jsonObj1,valueObj,num){
 		
 	}
 	else if(value !== null && typeof value === 'object'){
-		return getValue(jsonObj,value,valueObj,num+1); 
+		return getValue(jsonObj,value,valueObj,getFunction,num+1); 
 	}
 	else{
 		return null;
 	}
 }
-function getJsonValueFromAPI(jsonAPI,valueObj){
-	return getValue(jsonAPI,jsonAPI,valueObj,0);
+function getJsonValueFromAPI(jsonAPI,valueObj,functions){
+	return getValue(jsonAPI,jsonAPI,valueObj,functions,0);
 }
 
 
@@ -155,34 +132,34 @@ function getJsonValueFromAPI(jsonAPI,valueObj){
  	}
  }
 
-function condition(jsonObj,conditionObj,num){
+function condition(jsonObj,conditionObj,getFunction,num){
 	var valuePath = conditionObj[num.toString()];
 	if(typeof valuePath === 'undefined'){
 		return null;
 	}
-	var result = getJsonValueFromAPI(jsonObj,valuePath);
+	var result = getJsonValueFromAPI(jsonObj,valuePath,getFunction);
 	if(result === null){
-		return condition(jsonObj,conditionObj,num+1);
+		return condition(jsonObj,conditionObj,getFunction,num+1);
 	}else{
 		return result;
 	}
 }
-function conditionSelect(jsonAPI,conditionObj){
-	return condition(jsonAPI,conditionObj,0);
+function conditionSelect(jsonAPI,conditionObj,functions){
+	return condition(jsonAPI,conditionObj,functions,0);
 }
 
-function digInto(youtube,key_trans,value_trans,wordlinkTraceArray,wordlinkOneItemObj){
+function digInto(youtube,key_trans,value_trans,wordlinkTraceArray,wordlinkOneItemObj,functions){
 
 	if(value_trans.hasOwnProperty("xxx")){
 		var valueObj = value_trans.xxx;			
-		var youtubeValue = getJsonValueFromAPI(youtube,valueObj);
+		var youtubeValue = getJsonValueFromAPI(youtube,valueObj,functions);
 		if(youtubeValue !== null){
 			defineObjectAndSetValue(wordlinkOneItemObj,wordlinkTraceArray,0,key_trans,youtubeValue); 
 			}
 	}
 	else if(value_trans.hasOwnProperty("cond")){
 		var conditionObj = value_trans.cond;
-		var result = conditionSelect(youtube,conditionObj);
+		var result = conditionSelect(youtube,conditionObj,functions);
 		if(result !== null){
 			defineObjectAndSetValue(wordlinkOneItemObj,wordlinkTraceArray,0,key_trans,result); 
 		}
@@ -192,7 +169,7 @@ function digInto(youtube,key_trans,value_trans,wordlinkTraceArray,wordlinkOneIte
 		wordlinkTraceArray.push(key_trans);
 		for(key_trans_nested1 in value_trans){
 			var value_trans_nested1 = value_trans[key_trans_nested1];
-			digInto(youtube,key_trans_nested1,value_trans_nested1,wordlinkTraceArray,wordlinkOneItemObj);
+			digInto(youtube,key_trans_nested1,value_trans_nested1,wordlinkTraceArray,wordlinkOneItemObj,functions);
 		}
 		wordlinkTraceArray.pop();
 	}
