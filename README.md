@@ -54,7 +54,7 @@ JsonTranslator
 	}
 }
 ```
-The object of "xxx" is the path to get value from original json and have a reverse order. Ex. if we want to get value of 'youtube[latitude][geoCoordinates]', we should write {"0" : "geoCoordinates", "1" : "latitude"}.
+The object of "xxx" is the path to get value from original json and have a reverse order. Ex. if we want to get value of `youtube[latitude][geoCoordinates]`, we should write `{"0" : "geoCoordinates", "1" : "latitude"}`.
 
 - using translatorModule.js the default translator files used are tumblrTranslator3.json and youtubeTranslator3.json. These two files are using to transfer the original json to the exactly same format. 
 
