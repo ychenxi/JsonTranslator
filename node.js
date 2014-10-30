@@ -25,5 +25,10 @@ var youtubeFunctions = {
 				}
 };
 
+{
+        method:"GET",
+        path:'/api/translator',
+        config:controller.api.wordlink_translator
+    },
 translator.wordLinkTranslate(urlTumblr,fileTumblr,'/api/tumblr',http,function(jsonFromServer){return jsonFromServer.response});
 translator.wordLinkTranslate(urlYoutube,fileYoutube,'/api/youtube',https,function(jsonFromServer){return jsonFromServer.data.items},youtubeFunctions);

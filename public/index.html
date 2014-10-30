@@ -1,0 +1,19 @@
+
+
+<!DOCTYPE html>
+<html ng-app="translator">
+	<head>
+		<meta http-equiv="Content-Type" content="text/html;charset=utf-8">
+	</head>
+	<body ng-controller="mainController as mainCtrl">
+		<script type="text/javascript" src="angular.min.js"></script>
+		<script type="text/javascript" src="app.js"></script>
+		<p>Youtube Link : https://gdata.youtube.com/feeds/api/standardfeeds/most_popular?v=2&alt=jsonc&max%C2%ADresults=50&time=today</p>
+		<p>Tumblr Link : http://api.tumblr.com/v2/tagged?tag=music&api_key=fuiKNFp9vQFvjLNvx4sUwti4Yb5yGutBN4Xh10LXZhhRKjWlV4</p>
+		<form ng-submit="submit()" >
+  			Enter url to test:
+  			<input type="text" ng-model="text" name="text" />
+  			<input type="submit" id="submit" value="Submit" />
+		</form>
+	</body>
+</html>
