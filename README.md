@@ -1,9 +1,9 @@
 JsonTranslator
 ==============
 #JsonTranslator
--To run the codes, use `node translatorModule.js`
--JsonTranslator is using to translate json file into different formats. The file using to translate is also a json file.
--The example translator json file is:
+- To run the codes, use `node translatorModule.js`
+- JsonTranslator is using to translate json file into different formats. The file using to translate is also a json file.
+- The example translator json file is:
 
 ```javascript
 {
@@ -56,7 +56,7 @@ JsonTranslator
 ```
 The object of "xxx" is the path to get value from original json and have a reverse order. Ex. if we want to get value of 'youtube[latitude][geoCoordinates]', we should write {"0" : "geoCoordinates", "1" : "latitude"}.
 
--using translatorModule.js the default translator files used are tumblrTranslator3.json and youtubeTranslator3.json. These two files are using to transfer the original json to the exactly same format. 
+- using translatorModule.js the default translator files used are tumblrTranslator3.json and youtubeTranslator3.json. These two files are using to transfer the original json to the exactly same format. 
 
--tumblrTranslator3.json and youtubeTranslator3.json are generated using translatorJsonGen.js
+- tumblrTranslator3.json and youtubeTranslator3.json are generated using translatorJsonGen.js
 
